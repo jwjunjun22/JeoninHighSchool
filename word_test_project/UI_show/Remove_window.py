@@ -28,11 +28,31 @@ class Account_remove_Windows(QMainWindow, Ui_assignment_window):
     
     def Add_account_list(self, result):
         # 여기에 계정목록이 출력 됩니다. 
-        pass
+        try:
+            self.listcliked.clear()
+            for item in result['data']:
+                name = item['name']
+                admin = item['admin']
+                if name:  # name 값이 비어있지 않은 경우에만 추가
+                    list_item = QListWidgetItem(f"{name} - 관리자" if admin == 1 else f"{name} - 사용자")
+                    list_item.setForeground(QColor('blue') if admin == 1 else QColor('black'))
+                    self.listcliked.addItem(list_item) 
+        except Exception as e:
+            print(f"Exception error: {e}")
 
     def clicked_record_list(self, item):
-        # 더블클릭시 해당 계정을 삭제 합니다.
-        pass
+        itemtext = item.text()
+        change_itemtext = itemtext.strip("\n")
+        parts = change_itemtext.split(" - ")  # " - "를 기준으로 문자열 분리
+        name = parts[0]  # 첫 번째 부분을 self.Range에 할당
+        if name != "JeoninHighSchool":
+            result = self.Remove_account(name)
+            if result["result"] == "success":
+                # 계정목록 가져오기...
+                result = self.Get_account()
+                self.Add_account_list(result)
+        else:
+            self.popupwindows()
 
 
     def Get_account(self):
